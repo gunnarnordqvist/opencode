@@ -392,9 +392,7 @@ export namespace Config {
       disable: z.boolean().optional(),
       description: z.string().optional().describe("Description of when to use the agent"),
       mode: z.union([z.literal("subagent"), z.literal("primary"), z.literal("all")]).optional(),
-      context: ContextFilter.describe(
-        "Control what context from the parent session is passed to this subagent",
-      ),
+      context: ContextFilter.describe("Control what context from the parent session is passed to this subagent"),
       permission: z
         .object({
           edit: Permission.optional(),
