@@ -345,6 +345,43 @@ export namespace Config {
   })
   export type Command = z.infer<typeof Command>
 
+  export const ContextFilter = z
+    .object({
+      mode: z
+        .enum(["none", "summary", "filtered", "full"])
+        .optional()
+        .default("none")
+        .describe(
+          "Context mode: 'none' (no parent context), 'summary' (compact summary), 'filtered' (selective context), 'full' (all parent context)",
+        ),
+      maxTokens: z
+        .number()
+        .int()
+        .positive()
+        .optional()
+        .describe("Maximum tokens to include from parent session context"),
+      maxMessages: z
+        .number()
+        .int()
+        .positive()
+        .optional()
+        .describe("Maximum number of messages to include from parent session"),
+      includeToolResults: z
+        .array(z.string())
+        .optional()
+        .describe("Which tool results to include (e.g., ['read', 'edit', 'bash'])"),
+      includeMessageTypes: z
+        .array(z.enum(["user", "assistant"]))
+        .optional()
+        .describe("Which message types to include from parent session"),
+      includeFileChanges: z.boolean().optional().describe("Include file changes made in parent session"),
+    })
+    .optional()
+    .meta({
+      ref: "ContextFilterConfig",
+    })
+  export type ContextFilter = z.infer<typeof ContextFilter>
+
   export const Agent = z
     .object({
       model: z.string().optional(),
@@ -355,6 +392,9 @@ export namespace Config {
       disable: z.boolean().optional(),
       description: z.string().optional().describe("Description of when to use the agent"),
       mode: z.union([z.literal("subagent"), z.literal("primary"), z.literal("all")]).optional(),
+      context: ContextFilter.describe(
+        "Control what context from the parent session is passed to this subagent",
+      ),
       permission: z
         .object({
           edit: Permission.optional(),
